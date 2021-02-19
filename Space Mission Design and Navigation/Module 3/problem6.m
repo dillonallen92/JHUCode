@@ -16,7 +16,7 @@ AUtoKm = 149597870.7 % km
 a = 1.32489106722386 * AUtoKm; % km
 e = 0.255915584525353; % unitless
 
-f = 0:0.01:pi; % rads
+f = 0:0.01:2*pi; % rads
 r = (a*(1-e^2))./(1+e*cos(f)); % km
 v = sqrt( mu * (2./r - 1/a)); % km/s
 dv = sqrt(2*mu ./ r) - v ; % km/s
@@ -24,3 +24,8 @@ plot(f, dv);
 title("\DeltaV vs Mean Anomaly");
 xlabel("Mean Anomaly (rad)");
 ylabel("\DeltaV (km/s)");
+
+% Discussion
+% The minimum values are when we are at periapsis, because we will be
+% moving the fastest. The higher velocity mean we need less delta-v to
+% break out of orbit on an escape trajectory
