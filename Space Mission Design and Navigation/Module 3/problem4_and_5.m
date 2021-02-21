@@ -1,6 +1,7 @@
 clear, clc, close all;
 
 % Constants/values we may need 
+
 mu = 132712440041.94; % km^3/s^2
 AUtoKm = 149597870.7; % km 
 a = 1.32489106722386 * AUtoKm; % km
@@ -11,6 +12,7 @@ Period = 557.017301288787; % Days
 p = a*(1-e^2); % km 
 
 %% Problem 4
+
 % Calculate the amount of time that starman spends its orbit under 1 AU.
 % Note that you must make sure that the second mean anomaly is greater than
 % the first by adding 2*pi
@@ -32,6 +34,7 @@ t_1AU_total = 2 * t_1AU; % days
 
 
 %% Problem 5
+
 % Independently calculate the amount of time that starman spends above 1
 % AU and verify that this and the value obtained in 4 add up to the orbital
 % period.
