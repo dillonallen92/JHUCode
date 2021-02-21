@@ -10,6 +10,5 @@ i = 0.0188055315710807;
 Omega = 5.53414135342721;
 theta = 3.88465273236322;
 
-% [r,v] = problem2Function(a,e,i, Omega, omega, theta)
-
-[rV, vV] = problem2Prof(a,e,i,Omega,omega,theta)
+%r is AU, v is AU / day
+[r, v] = problem2Function(a,e,i,Omega,omega,theta)
