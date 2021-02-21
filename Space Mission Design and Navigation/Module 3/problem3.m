@@ -46,7 +46,7 @@ function [a_au,e_norm,i,Omega,omega,theta,P,rp,ra,E,M] = problem3(r,v)
         omega = 2*pi - omega;
     end
     
-    % Finally, find the true anomaly (theta)
+    % Find the true anomaly (theta)
     theta = acos(dot(e_vec, r_km)/(e_norm * norm(r_km))); % Radians
     if dot(r_km, v_kms) < 0
         theta = 2*pi - theta;
