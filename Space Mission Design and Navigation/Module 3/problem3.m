@@ -1,5 +1,4 @@
 
-
 % Problem 3
 % Write a Matlab function that also calculates the period, radius of
 % periapsis, radius of apoapsis, mean anomaly, and eccentric anomaly in
@@ -48,22 +47,22 @@ function [a_au,e_norm,i,Omega,omega,theta,P,rp,ra,E,M] = problem3(r,v)
     end
     
     % Finally, find the true anomaly (theta)
-    theta = acos(dot(e_vec, r_km)/(e_norm * norm(r_km)));
+    theta = acos(dot(e_vec, r_km)/(e_norm * norm(r_km))); % Radians
     if dot(r_km, v_kms) < 0
         theta = 2*pi - theta;
     end
     
     P = 2*pi*sqrt(a^3 / mu) * secondsToDays; % days
-    rp = a_au * (1 - e_norm);
-    ra = a_au * (1 + e_norm);
+    rp = a_au * (1 - e_norm); % AU
+    ra = a_au * (1 + e_norm); % AU
     
-    E = 2 * atan(sqrt((1 - e_norm)/(1 + e_norm)) * tan(theta/2));
+    E = 2 * atan(sqrt((1 - e_norm)/(1 + e_norm)) * tan(theta/2)); % Radians
     
     if E < 0
         E = 2*pi + E;
     end
     
-    M = E - e_norm * sin(E);
+    M = E - e_norm * sin(E); % Radians
     
     if M < 0
         M = 2*pi + M;
