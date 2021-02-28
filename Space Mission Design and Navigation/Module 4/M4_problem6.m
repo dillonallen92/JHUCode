@@ -21,7 +21,7 @@ p4 = 10.630145813;
 c = [p0 p1 p2 p3 p4]';
 
 xvec0 = [x0 y0 xdot0 ydot0 g]';
-tol = 1E-5;
+tol = 1E-10;
 
 xp = NewtonScheme(c, xvec0, xs, ys, tol);
 
@@ -59,7 +59,7 @@ function val = G(xvec,xs,ys)
 end
 
 % Matrix of partial derivatives
-function val = pJ(xvec, xs, ys)
+function val = partialGMat(xvec, xs, ys)
     val = zeros(5); % 5 x 5 matrix
     for i = 1 : 5
        t = i - 1;
@@ -72,10 +72,12 @@ function val = pJ(xvec, xs, ys)
 end
 
 % Newtons Method Function
+% partialGMat is the negative partial J / partial X0 vector on page 7 
+% (eq 1.2.9)
 function xp = NewtonScheme(c, xvec, xs, ys, tol)
     while 1
        J = c - G(xvec, xs, ys);
-       xp = xvec + pJ(xvec, xs, ys)\J; % My pJ is - pG/pX0 so there is a +
+       xp = xvec + partialGMat(xvec, xs, ys)\J; % 
        if norm(xp - xvec) < tol
            break;
        end
