@@ -24,6 +24,4 @@ days = deltaT/(24*3600);
 
 %% Parabolic Flight time
 % Maybe this is better than using 'a' from problem 2
-theta = dot(r3,r1)/(r1norm * r3norm);
-tp = (sqrt(2)/(3*sqrt(mu_S))) * ( s^(3/2) - sign(sin(theta))*(s-c)^(3/2));
-tp_days = tp * (1/(24*3600));
+theta = dot(r3,r1)/(r1norm * r3norm)

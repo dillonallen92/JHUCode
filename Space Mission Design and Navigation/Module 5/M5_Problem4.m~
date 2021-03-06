@@ -39,20 +39,15 @@ theta = acos(dot(r1,r3)/(r1norm*r3norm)); % radians
 
 [sol, fval, exitflag, output] = fzero(@(x) lamFun(x,tProb3,s,c,theta,tmin,mu_S), [a_min,10*a_min]);
 
-alpha_vel = 2*asin(sqrt(s/(2*sol)));
-beta_vel = 2*asin(sqrt((s-c)/(2*sol)));
-A = sqrt(mu_S/(4*sol))*cot(alpha_vel/2); % km/s
-B = sqrt(mu_S/(4*sol))*cot(beta_vel/2); % km/s 
-uc = (r3-r1)/norm(r3-r1); 
-u1 = r1/r1norm;
+a = sol;
 
-v1 = (B+A)*uc + (B-A)*u1; % km/s
+alpha_vel
 
 %% Part C
 % Show that the resulting value of semi-major axis matches that of Starman
-aSM = 198200882.566439; % km
+aSM = 198200882.566439;
 
-if aSM - sol < 1E-5
+if aSM - a < 1E-5
     disp("close enough")
 end
 
