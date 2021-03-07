@@ -50,7 +50,7 @@ v1 = (B+A)*uc + (B-A)*u1; % km/s
 
 %% Part C
 % Show that the resulting value of semi-major axis matches that of Starman
-aSM = 198200882.566439; % km
+aSM = 198200882.566439; % km (StarMan)
 
 if aSM - sol < 1E-5
     disp("close enough")
