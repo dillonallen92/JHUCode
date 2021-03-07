@@ -9,15 +9,11 @@ r3 = [-139952788.024352, 54396927.5494364, -1043119.92803938]'; % km
 % Sun gravitational parameter
 mu_S = 1.327124400189E20 * (1/1000)^3; % km^3/s^2
 
-% Ask the professor but I believe I can use my a from problem 2
-
 r1norm = norm(r1); % km
 r3norm = norm(r3); % km
 a = 1.982008825664394e+08; % km (from problem 2)
 c = norm(r3-r1); % km
 s = (r1norm + r3norm + c)/2; % km
-alpha = 2*asin(sqrt(s/(2*a))); % radians 
-beta = 2*asin(sqrt((s-c)/(2*a))); % radians
 
 %% Part A
 % Find the minimum semi-major axis and the corresponding transfer time to
@@ -37,12 +33,12 @@ tProb3 = 5.347366092834404e+05; % s
 
 theta = acos(dot(r1,r3)/(r1norm*r3norm)); % radians
 
-[sol, fval, exitflag, output] = fzero(@(x) lamFun(x,tProb3,s,c,theta,tmin,mu_S), [a_min,10*a_min]);
+[a_sol, fval, exitflag, output] = fzero(@(x) lamFun(x,tProb3,s,c,theta,tmin,mu_S), [a_min,10*a_min]);
 
-alpha_vel = 2*asin(sqrt(s/(2*sol)));
-beta_vel = 2*asin(sqrt((s-c)/(2*sol)));
-A = sqrt(mu_S/(4*sol))*cot(alpha_vel/2); % km/s
-B = sqrt(mu_S/(4*sol))*cot(beta_vel/2); % km/s 
+alpha_vel = 2*asin(sqrt(s/(2*a_sol)));
+beta_vel = 2*asin(sqrt((s-c)/(2*a_sol)));
+A = sqrt(mu_S/(4*a_sol))*cot(alpha_vel/2); % km/s
+B = sqrt(mu_S/(4*a_sol))*cot(beta_vel/2); % km/s 
 uc = (r3-r1)/norm(r3-r1); 
 u1 = r1/r1norm;
 
@@ -52,7 +48,7 @@ v1 = (B+A)*uc + (B-A)*u1; % km/s
 % Show that the resulting value of semi-major axis matches that of Starman
 aSM = 198200882.566439; % km (StarMan)
 
-if aSM - sol < 1E-5
+if aSM - a_sol < 1E-5
     disp("close enough")
 end
 
