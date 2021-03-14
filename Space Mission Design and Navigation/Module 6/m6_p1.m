@@ -62,6 +62,55 @@ vE = [9.75958833607707; 27.8458269687754; -0.00137645277890108]; % km/s
 rS = [-690232102.803463; 1168541543.04847; 7181595.50405902]; % km
 vS = [-8.84280567480198; -4.93025746647439; 0.43850160809551]; % km/s
 
+mu_S = 1.327124400189E20 * (1/1000)^3; % km^3/s^2
+
+rEnorm = norm(rE); % km
+rSnorm = norm(rS); % km
+c = norm(rS-rE); % km
+s = (rEnorm + rSnorm + c)/2; % km
+
+a_min = s/2; % km 
+beta_min = 2*asin(sqrt((s-c)/(s))); % radians
+
+tmin = sqrt(s^3 / (8*mu_S))*(pi - beta_min + sin(beta_min)); % s
+minDays = tmin*(1/(3600*24)); % days
+
+tof = 1214 * 24 * 60 * 60; % seconds
+
+theta = acos(dot(rE,rS)/(rEnorm*rSnorm)); % radians
+
+[a_sol, fval, exitflag, output] = fzero(@(x) lamFun(x,tof,s,c,theta,tmin,mu_S), [a_min, 10*a_min]);
+
+alpha_vel = 2*asin(sqrt(s/(2*a_sol)));
+beta_vel = 2*asin(sqrt((s-c)/(2*a_sol)));
+A = sqrt(mu_S/(4*a_sol))*cot(alpha_vel/2); % km/s
+B = sqrt(mu_S/(4*a_sol))*cot(beta_vel/2); % km/s 
+uc = (rS-rE)/norm(rS-rE); 
+uE = rE/rEnorm;
+uS = rS/rSnorm;
+
+vi = (B+A)*uc + (B-A)*uE; % km/s
+
+vf = (B+A)*uc - (B-A)*uS;
+
+fprintf("Semi-major axis of trajectory: %d (km)\n", a_sol);
+fprintf("Initial Velocity: ");
+disp(vi);
+fprintf("Final Velocity: ");
+disp(vf);
+
+%% Part E
+% Given the final velocity of the spacecraft w.r.t the sun, estimate the excess velocity
+% w.r.t Saturn and calculate the energy w.r.t Saturn
+
+v_inf = vf - vS;
+
+En = dot(v_inf, v_inf) / 2;
+
+%% Part F
+% If a periapsis radius of 63,281.4 km is targeted, calculate the dv required to capture into
+% orbit with period of 200 days
+
 
 
 %% Functions
@@ -78,4 +127,24 @@ function totalProp = maneuver_prop_calc(m0, maneuver_list, g0, Isp)
     end
     
     totalProp = prop_mass;
+end
+
+function val = lamFun(x,tof,s,c,theta,tmin, mu_S)
+
+    alpha_0 = 2*asin(sqrt(s/(2*x)));
+    beta_0 = 2*asin(sqrt((s-c)/(2*x)));
+
+    if (0 <= theta) && (theta <= pi)
+        beta = beta_0;
+    else
+        beta = - beta_0;
+    end
+    
+    if tof <= tmin
+        alpha = alpha_0;
+    else
+        alpha = 2*pi - alpha_0;
+    end
+    
+    val = sqrt(mu_S/x^3)*tof -  (alpha - beta - (sin(alpha) - sin(beta)));
 end
