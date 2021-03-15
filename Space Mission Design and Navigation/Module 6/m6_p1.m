@@ -111,6 +111,36 @@ En = dot(v_inf, v_inf) / 2;
 % If a periapsis radius of 63,281.4 km is targeted, calculate the dv required to capture into
 % orbit with period of 200 days
 
+mu_Saturn =3.7931187E16 *(1/1000)^3 ; % km^3/s^2
+rp_Saturn = 63281.4; % km
+P = 200 * 24 * 3600; % s
+a_saturnOrbit = (mu_Saturn*P^2/(2*pi)^2)^(1/3); % km
+E_Saturn = -mu_Saturn/(2*a_saturnOrbit);
+
+v_SaturnOrbit = sqrt(2*(E_Saturn + mu_Saturn/rp_Saturn));
+v_SC_Saturn = sqrt(2*(En + mu_Saturn/rp_Saturn));
+dv_SaturnOrbit = v_SaturnOrbit - v_SC_Saturn; % should be negative to indicate slowing down
+
+m0_atSaturn = m0 - prop_mass;
+saturn_prop = maneuver_prop_calc(m0_atSaturn, abs(dv_SaturnOrbit), g0, Isp);
+
+time_for_maneuver = saturn_prop / mdot; % seconds
+
+m_remaining = m0_atSaturn - saturn_prop;
+
+%% Part G
+% C3 = 2*En. If C3 ~ 16 km^2/s^2, and they cancel the inner legs, what is the difference
+% in C3?
+
+% C3 from E2 to S1
+C3_E2S1 = 2*En;
+C3_problemStatement = 16;
+dC3 = C3_E2S1 - C3_problemStatement;
+
+% Discussion: Removing the inner legs of the trip will require more direct launch energy
+% to accomplish the mission, since we cannot rely on gravity assists. This will make the
+% mission harder in the fact that you have to find rockets able to match the higher C3 
+% needed as well as match the needed SC mass.
 
 
 %% Functions
