@@ -6,8 +6,8 @@
 % SUMMARY:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
-% This code implements an <???> measurement. This implementation follows 
-% equations out of Tapley, Schutz, and Born Chapter <???>(2004 edition) and 
+% This code implements the Ideal Range measurement. This implementation follows 
+% equations out of Tapley, Schutz, and Born Chapter 3.2.3 (2004 edition) and 
 % the course notes for Module 7.
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +93,10 @@ ID = 0;
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
+    H = 1/sqrt((x(1)^2 + x(2)^2 + x(3)^2)) * [x(1); x(2); x(3)];
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
 end
+
+zOrh = 

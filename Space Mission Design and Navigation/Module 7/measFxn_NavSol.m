@@ -87,13 +87,15 @@ ID = 0;
 
 % Measurement equations here:
 %  zOrh = ???
-
-
+zOrh = x + w;
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
-    % H = ???
+    % H = Identity Matrix for NavSol
+    H = [1 0 0; 0 1 0; 0 0 1];
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
 end
+
+zOrh = zOrh + H*x;
