@@ -12,11 +12,17 @@ opts.derFlag = derFlag;
 
 
 %% Problem 2 (Ideal Range)
-[zOrh2, H2, ID] = measFxn_IdealRange(r1_IVec, x_Inertial, wIdRng, t, opts);
+x2vec = [r1_IVec; 0;0;0] - x_Inertial;
+[zOrh2, H2, ID] = measFxn_IdealRange(x2vec, wIdRng, t, opts);
 
 %% Problem 3 (Ideal Range Rate)
+x3vec = [r1_IVec; r1_IdotVec] - x_Inertial;
+[zOrh3, H3, ID] = measFxn_IdealRangeRate(x3vec, wIdRngR8, t, opts);
 
 %% Problem 4 (Integrated Carrier Phase)
+x4vec = [r1_IVec; r1_IdotVec] - x_Inertial;
+x4 = [x4vec; ICP_bias];
+
 
 %% Problem 5 (Azimuth / Elevation)
 

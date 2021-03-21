@@ -85,14 +85,20 @@ end
 % Default:
 ID = 0;
 
+syms xc y z xdot ydot zdot;
+rho = @(xc,y,z) sqrt(xc^2 + y^2 + z^2);
+h = @(xc,y,z,xdot,ydot,zdot) (1/rho(xc,y,z)) * ((xc*xdot) + (y*ydot) + (z*zdot));
+
 % Measurement equations here:
 %  zOrh = ???
-
+zOrh = h(x(1),x(2),x(3),x(4),x(5),x(6)) + w;
 
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
+    Hanalytic= jacobian(h, [xc y z xdot ydot zdot]);
+    H = eval(subs(Hanalytic, [xc y z xdot ydot zdot], [x(1) x(2) x(3) x(4) x(5) x(6)]));
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
