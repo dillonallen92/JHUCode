@@ -88,6 +88,7 @@ ID = 0;
 % Measurement equations here:
 %  zOrh = ???
 zOrh = x + w;
+
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
@@ -97,5 +98,3 @@ else
     % Jacobian not needed.  Save computation time and return.
     H = [];
 end
-
-zOrh = zOrh + H*x;

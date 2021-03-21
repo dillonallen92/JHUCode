@@ -70,7 +70,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [zOrh,H,ID] = measFxn_IdealRange(x,w,t,opts)
+function [zOrh,H,ID] = measFxn_IdealRange(r,x,w,t,opts)
 
 % Sanity Checks:
 nx = size(x,1);
@@ -87,16 +87,15 @@ ID = 0;
 
 % Measurement equations here:
 %  zOrh = ???
-
+rho = sqrt(((r(1) -x(1))^2 + (r(2) - x(2))^2 + (r(3) - x(3))^2));
+zOrh = rho + w;
 
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
-    H = 1/sqrt((x(1)^2 + x(2)^2 + x(3)^2)) * [x(1); x(2); x(3)];
+    H = (1/rho) * [ r(1) - x(1), r(2) -  x(2), r(3) - x(3)];
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
 end
-
-zOrh = 

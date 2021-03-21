@@ -8,10 +8,11 @@ load('HW1_Input.mat');
 
 opts.derFlag = derFlag;
 
-[zOrh, H, ID] = measFxn_NavSol(x_Fixed, wNavSol, t, opts);
+[zOrh1, H1, ID] = measFxn_NavSol(x_Fixed, wNavSol, t, opts);
 
 
 %% Problem 2 (Ideal Range)
+[zOrh2, H2, ID] = measFxn_IdealRange(r1_IVec, x_Inertial, wIdRng, t, opts);
 
 %% Problem 3 (Ideal Range Rate)
 
