@@ -22,7 +22,7 @@ x3vec = [r1_IVec; r1_IdotVec] - x_Inertial;
 %% Problem 4 (Integrated Carrier Phase)
 x4vec = [r1_IVec; r1_IdotVec] - x_Inertial;
 x4 = [x4vec; ICP_bias];
-
+[zOrh4, H4, ID] = measFxn_IntegratedCarrierPhase(x4, wIntCarPhs, t, opts);
 
 %% Problem 5 (Azimuth / Elevation)
 

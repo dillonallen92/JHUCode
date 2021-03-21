@@ -6,8 +6,8 @@
 % SUMMARY:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
-% This code implements an <???> measurement. This implementation follows 
-% equations out of Tapley, Schutz, and Born Chapter <???>(2004 edition) and 
+% This code implements an ICP measurement. This implementation follows 
+% equations out of Tapley, Schutz, and Born Chapter 3 (2004 edition) and 
 % the course notes for Module 7.
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,14 +85,19 @@ end
 % Default:
 ID = 0;
 
+syms xc y z theta;
+h = @(xc, y, z, theta) sqrt(xc^2 + y^2 + z^2) + theta;
+
 % Measurement equations here:
 %  zOrh = ???
-
+zOrh = h(x(1),x(2),x(3),x(7)) + w;
 
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
+    Hanalytic = jacobian(h, [xc, y, z, theta]);
+    H = eval(subs(Hanalytic, [xc, y, z, theta], [x(1), x(2), x(3), x(7)]));
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
