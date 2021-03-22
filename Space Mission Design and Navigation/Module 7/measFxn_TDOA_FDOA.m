@@ -85,14 +85,46 @@ end
 % Default:
 ID = 0;
 
+% Constant
+c = 1e8;
+
+r = [x(1); x(2); x(3)];
+v = [x(4); x(5); x(6)];
+
+r1 = [opts.r1(1); opts.r1(2); opts.r1(3)];
+v1 = [opts.r1(4); opts.r1(5); opts.r1(6)];
+
+r2 = [opts.r2(1); opts.r2(2); opts.r2(3)];
+v2 = [opts.r2(4); opts.r2(5); opts.r2(6)];
+
+freq = opts.f0;
+
+rho1 = (1/norm(r-r1)) * (r-r1);
+rho2 = (1/norm(r-r2)) * (r-r2);
 % Measurement equations here:
 %  zOrh = ???
-
-
+zOrh(1) = (1/c)*(norm(r-r1) - norm(r-r2)) + w(1);
+zOrh(2) = (freq/c)*(dot(rho1,(v-v1)) - dot(rho2, (v-v2))) + w(2);
+ 
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
+    syms rx ry rz vx vy vz r1x r1y r1z v1x v1y v1z r2x r2y r2z v2x v2y v2z;
+    r = [rx; ry; rz];
+    v = [vx; vy; vz];
+    r1 = [r1x; r1y; r1z];
+    v1 = [v1x; v1y; v1z];
+    r2 = [r2x; r2y; r2z];
+    v2 = [v2x; v2y; v2z];
+    rho1 = (1/norm(r-r1)) * (r-r1);
+    rho2 = (1/norm(r-r2)) * (r-r2);
+    zMat = [(1/c)*(norm(r-r1) - norm(r-r2)); (freq/c)*(dot(rho1,(v-v1)) - dot(rho2, (v-v2)))];
+    variableVec = [rx ry rz vx vy vz r1x r1y r1z v1x v1y v1z r2x r2y r2z v2x v2y v2z];
+    numericalVec = [x(1) x(2) x(3) x(4) x(5) x(6) opts.r1(1) opts.r1(2) opts.r1(3) opts.r1(4) opts.r1(5) opts.r1(6) ...
+                    opts.r2(1) opts.r2(2) opts.r2(3) opts.r2(4) opts.r2(5) opts.r2(6)];
+    H = eval(subs(jacobian(zMat, [rx ry rz vx vy vz]), variableVec, numericalVec));
+    
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];

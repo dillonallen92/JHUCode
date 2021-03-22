@@ -85,15 +85,54 @@ end
 % Default:
 ID = 0;
 
+% Constant
+omegaEarth = 7.2921159e-5;
+deltaT = t - opts.t;
+
 % Measurement equations here:
 %  zOrh = ???
+x = [x(1) x(2) x(3)]';
+rtVec = RotTrop(x) * (RotZ(omegaEarth, deltaT) * x);
+rt = sqrt(rtVec(1)^2 + rtVec(2)^2 + rtVec(3)^2);
 
+z = [atan2(rtVec(2), rtVec(1)); asin(rtVec(3)/rt)];
+
+zOrh = z + w;
 
 % Jacobian (if needed) here:
 if (opts.derFlag == 1)
     % Compute Jacobian:
     % H = ???
+    epsilon = 1e-7;
+    for j = 1:2
+        for i = 1:3
+           x(i) = x(i) + epsilon;
+           rtVecptrb = RotTrop(x) * (RotZ(omegaEarth, deltaT) * x);
+           rtptrb = sqrt(rtVecptrb(1)^2 + rtVecptrb(2)^2 + rtVecptrb(3)^2);
+           h(:,i) = [atan2(rtVecptrb(2), rtVecptrb(1)); asin(rtVecptrb(3)/rtptrb)];
+           H(:,i) = (h(i) - z)/epsilon; 
+           x(i) = x(i) - epsilon;
+        end
+    end
 else
     % Jacobian not needed.  Save computation time and return.
     H = [];
+end
+
+function zRotationMat = RotZ(omegaEarth, deltaT)
+    theta = omegaEarth * deltaT;
+    zRotationMat = [cos(theta), sin(theta), 0; 
+                    -sin(theta), cos(theta), 0;
+                    0, 0, 1;];             
+end
+
+function tropRotMat = RotTrop(x)
+    xy = sqrt(x(1)^2 + x(2)^2);
+    lambda = acos(x(1)/xy);
+    phi = atan2(x(3), xy);
+    tropRotMat = [-sin(lambda), cos(lambda), 0;
+                  -sin(phi)*cos(lambda), -sin(phi)*sin(lambda), cos(phi);
+                  cos(phi)*cos(lambda), cos(phi)*sin(lambda), sin(phi)];
+end
+
 end
