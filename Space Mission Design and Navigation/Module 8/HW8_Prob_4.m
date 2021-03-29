@@ -35,4 +35,6 @@ while 1
     end
 end
 
-%% 
+%% Calculations
+light_range = c * delT;
+rho_diff = light_range - rho_ideal;
