@@ -23,8 +23,12 @@ tauVec = logspace(1,4,10);
 % these data files represent
 subplot(211)
 plot(log10(tauVec), sigmaVec_1);
+xlabel("log(\tau)");
+ylabel("log(\sigma_{y})");
 subplot(212)
 plot(log10(tauVec), sigmaVec_2);
+xlabel("log(\tau)");
+ylabel("log(\sigma_{y})");
 %% Functions
 % Allan Variance Function
 function [variance, sigma_y] = AllanVariance(clockVec, timeVec,dt, tauVec)
@@ -46,3 +50,7 @@ function [variance, sigma_y] = AllanVariance(clockVec, timeVec,dt, tauVec)
     end
 end
 
+%% Discussion
+% I believe the first plot is close to passive H Maser while the second one
+% is quartz? I think I really messed up this script so I am probably off
+% base. 
