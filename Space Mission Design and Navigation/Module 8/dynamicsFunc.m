@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Author: Ryan Mitch
-% Date Modified: 10-27-2020
+% Date Modified: 03-29-2021
 % Copyright (c) 2020 Ryan Mitch/JHUAPL
-%
+% Template Modified by: Dillon Allen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUMMARY:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,7 +49,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [t,x,Phi,Gamma_u,Gamma_v] = template(x,u,v,tspan,param)
+function [t,x,Phi,Gamma_u,Gamma_v] = dynamicsFunc(x,u,v,tspan,param)
 
 % Sanity Checks:
 nx = size(x,1);
@@ -62,11 +62,12 @@ t = tspan(end);
 
 % Update x:  (IF linear, x = Phi*x + Gamma_u*u + Gamma_v*v)
 
+
 % Jacobian (if needed) here:
 if (param.derFlag == 1)
     % Compute Phi:
     % Phi = ???;
-    
+    Phi = @(t,s)[1 t-s (t-s)^2 / 2; 0 1 t-s; 0 0 1];
     % Compute Gamma_u and Gamma_v:
     Gamma_u = [1 0 0; 0 1 0; 0 0 1];    
     Gamma_v = [ 1 0 0; 0 1 0; 0 0 1];    
@@ -75,5 +76,12 @@ else
     [Phi,Gamma_u,Gamma_v] = deal([]);
 end
 
+% Update x:  (IF linear, x = Phi*x + Gamma_u*u + Gamma_v*v)
+x(:,1) = x;
+for i = 1 : length(tspan)-1
+   x(:,i+1) = Phi(tspan(i+1), tspan(i))*x(:,i) + Gamma_u * u(:,i) + Gamma_v * v;
+end
+
+end
 
 
