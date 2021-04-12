@@ -51,6 +51,9 @@ xfinal = x(end,1:20);
 % for a 0.001 km/s increase in Vy.
 
 STMFinal = reshape(xfinal(1,5:20),4,4)';
+dx_dvy = STMFinal(1,4);
+dvy = 0.001; % km/s
+dx = dvy * dx_dvy; % km
 
 %% Part F
 % Propogate with part d
@@ -60,12 +63,18 @@ xCombNew = [rnew(1); rnew(2); vnew(1); vnew(2); reshape(eye(4),16,1)];
 [tnew, xnew] = ode113(@(t,x)twoBody(t,x,muE),tspan,xCombNew,options);
 
 xnew_final = xnew(end, 1:20);
-xnew_final_x = xnew(1,1);
+xnew_final_x = xnew_final(1,1);
 xfinal_x = xfinal(1,1);
 partF_difference = xnew_final_x - xfinal_x;
 
+%% Part G
+% The difference is really small but there is a discrepancy because the STM
+% method we used in part E is at the end of the iterated process from
+% ode113 with the initial unperturbed state vector whereas the value in 
+% part F is from the perturbed state propagated through the whole 12 hour 
+% cycle.
 
-%% Functions
+%% Function
 % Part C Function
 
 function [x_dot, t] = twoBody(t,x,mu)
