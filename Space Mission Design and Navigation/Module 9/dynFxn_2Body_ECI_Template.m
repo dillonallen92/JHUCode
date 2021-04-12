@@ -129,12 +129,12 @@ Gamma_v = reshape(z((nx+nx2+nunx)+1:(nx+nx2+nunx+nvnx)),nx,nv);
 % State:
 zdot(1:nx,1)                 = xdot;
 % Phi:
-Phidot                       = ???
+Phidot                       = A * Phi;
 zdot(nx+(1:nx2),1)           = Phidot(:);
 % Control and Process Noise:
-Gamma_uDot                   = ???
+Gamma_uDot                   = A*Gamma_u + Bu;
 zdot(nx+nx2+(1:nunx),1)      = Gamma_uDot(:);
-Gamma_vDot                   = ???
+Gamma_vDot                   = A*Gamma_v + Bv;
 zdot(nx+nx2+nunx+(1:nvnx),1) = Gamma_vDot(:);
 end
 
