@@ -15,6 +15,7 @@ plot3(0,0,0,'k*');
 text(0,0,0,labels(4), 'VerticalAlignment', 'bottom', 'HorizontalAlignment','right');
 axis equal; xlabel('x'); ylabel('y'); zlabel('z'); grid on;
 title("Inertial Placement of Satellite and Range Stations");
+
 %% Observability Calculations
 H_s1 = zeros(size(xVecHist));
 H_s2 = zeros(size(xVecHist));
