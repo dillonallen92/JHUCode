@@ -36,8 +36,30 @@ opts.t = 0;
 [h3,H3] = AzElMeasurementModel(xVec3,t,opts);
 h = [h1; h2; h3];
 H = [H1; H2; H3];
+zVec = zVec .* 1e6;
+x_hat = x_star - inv(H'*WMat * H)*(H' * WMat * (h - zVec ));
+x_star = x_hat;
+while 1
+    [h1,H1] = AzElMeasurementModel(x_star,t,opts);
+    [h2,H2] = AzElMeasurementModel(x_star,t,opts);
+    [h3,H3] = AzElMeasurementModel(x_star,t,opts);
+    h = [h1; h2; h3];
+    H = [H1; H2; H3];
+    x_hat = x_star - inv(H'*WMat * H)*(H' * WMat * (h - zVec));
+    if (norm(x_hat - x_star) < 1e-6)
+        disp('converges');
+        disp('x_hat');
+        x_hat
+        break;
+    elseif (j > 1000)
+            disp("run time exceeded");
+            break;
+    else
+        x_star = x_hat;
+        j = j + 1;
+    end
+end
 
-% First Calculation before loop
 
 function [z,H] = AzElMeasurementModel(x,t,opts)
 
