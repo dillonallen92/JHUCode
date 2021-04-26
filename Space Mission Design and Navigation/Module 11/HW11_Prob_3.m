@@ -1,5 +1,5 @@
 % Problem 3
-% NLWLS Range
+% NLS Range
 
 clear, clc, close all;
 
@@ -9,7 +9,9 @@ opts1.r_IVec = [r1_IVec(1); r1_IVec(2);];
 opts2.r_IVec = [r2_IVec(1); r2_IVec(2);];
 xVec = zVec;
 t = 0;
-w = 0;
+w = sigmaMeas;
+W = eye(2) * sigmaMeas^2;
+Rinv = inv(W);
 
 % Truncate xVecTrue to remove z,vx,vy,vz dependance
 xVecTrue_trunc = [xVecTrue(1); xVecTrue(2)];
@@ -17,26 +19,25 @@ xVecTrue_trunc = [xVecTrue(1); xVecTrue(2)];
 % Initiate x_star
 x_star = x0;
 j = 1;
+
+% Initial State Error
+initError = norm(xVecTrue_trunc - x0);
+
 % Loop til convergence
-while 1
+for  j  = 1 : 10
     [h1, H1, ~] = Provided_measFxnRange(x_star, w, t, opts1);
     [h2, H2, ~] = Provided_measFxnRange(x_star, w, t, opts2);
     h = [h1; h2];
     H = [H1; H2];
-    x_hat = x_star - (H'*H)*H'*(h - zVec);
-    if (norm(x_hat - x_star) < 1e-8)
-        disp('converge');
-        xVec_converge = x_hat;
-        xVecHist(:,j) = xVec_converge;
-        errHist(j) = norm(x_hat - xVecTrue_trunc);
-        break;
-    else
-        xVecHist(:,j) = x_hat;
-        errHist(j) = norm(x_hat - xVecTrue_trunc);
-        x_star = x_hat
-        j = j + 1;
-    end
+    x_hat = x_star - inv(H'*Rinv *H)*H'* Rinv* (h - zVec);
+    xVecHist(:,j) = x_hat;
+    errHist(j) = norm(x_hat - xVecTrue_trunc);
+    x_star = x_hat
 end
+
+P = inv(H'*Rinv*H);
+% Final State Error
+finalErr = errHist(length(errHist));
 
 % Plot of error vs iteration count
 itVec = 1:1:length(errHist);
