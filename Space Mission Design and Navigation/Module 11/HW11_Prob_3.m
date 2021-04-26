@@ -35,7 +35,9 @@ for  j  = 1 : 10
     x_star = x_hat
 end
 
+% P Matrix
 P = inv(H'*Rinv*H);
+
 % Final State Error
 finalErr = errHist(length(errHist));
 
