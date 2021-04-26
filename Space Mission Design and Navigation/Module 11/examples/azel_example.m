@@ -31,29 +31,33 @@ xVec3 = rSat_ECEF_m - r3_IVec;
 x_star = x_0;
 t = 0;
 opts.t = 0;
-[h1,H1] = AzElMeasurementModel(xVec1,t,opts);
-[h2,H2] = AzElMeasurementModel(xVec2,t,opts);
-[h3,H3] = AzElMeasurementModel(xVec3,t,opts);
-h = [h1; h2; h3];
-H = [H1; H2; H3];
+% [h1,H1] = AzElMeasurementModel(xVec1,t,opts);
+% [h2,H2] = AzElMeasurementModel(xVec2,t,opts);
+% [h3,H3] = AzElMeasurementModel(xVec3,t,opts);
+% h = [h1; h2; h3];
+% H = [H1; H2; H3];
 zVec = zVec .* 1e6;
-x_hat = x_star - inv(H'*WMat * H)*(H' * WMat * (h - zVec ));
-x_star = x_hat;
+% x_hat = x_star - inv(H' * WMat * H) * (H' * WMat * (h - zVec));
+% x_star = x_hat;
+j = 0;
 while 1
-    [h1,H1] = AzElMeasurementModel(x_star,t,opts);
-    [h2,H2] = AzElMeasurementModel(x_star,t,opts);
-    [h3,H3] = AzElMeasurementModel(x_star,t,opts);
+    xstar1 = x_star - r1_IVec;
+    xstar2 = x_star - r2_IVec;
+    xstar3 = x_star - r3_IVec;
+    [h1,H1] = AzElMeasurementModel(xstar1,t,opts);
+    [h2,H2] = AzElMeasurementModel(xstar2,t,opts);
+    [h3,H3] = AzElMeasurementModel(xstar3,t,opts);
     h = [h1; h2; h3];
     H = [H1; H2; H3];
-    x_hat = x_star - inv(H'*WMat * H)*(H' * WMat * (h - zVec));
+    x_hat = x_star - inv(H' * WMat * H)*(H' * WMat * (zVec - h));
     if (norm(x_hat - x_star) < 1e-6)
         disp('converges');
         disp('x_hat');
         x_hat
         break;
-    elseif (j > 1000)
-            disp("run time exceeded");
-            break;
+    elseif j > 1000
+        disp('runtime exceeded');
+        break;
     else
         x_star = x_hat;
         j = j + 1;
@@ -69,8 +73,6 @@ function [z,H] = AzElMeasurementModel(x,t,opts)
     
     % Measurement equations here:
     % zOrh = ???
-    
-    x = [x(1) x(2) x(3)]';
     rtVec = RotTrop(x) * (RotZ(omegaEarth, deltaT) * x);
     rt = sqrt(rtVec(1)^2 + rtVec(2)^2 + rtVec(3)^2);
     z = [atan2(rtVec(2), rtVec(1)); asin(rtVec(3)/rt)];
