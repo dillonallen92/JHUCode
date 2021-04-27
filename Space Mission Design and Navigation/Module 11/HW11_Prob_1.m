@@ -9,7 +9,10 @@ clear, clc, close all;
 
 load('HW11_Prob_1_data.mat');
 
-initialStateError = norm(xVecTrue - xInitial);
+p1initialStateError = norm(xVecTrue - xInitial);
 H = [1 0; 1 1; 1 2; 1 4; 1 5];
 x_hat = inv(H'*H)*H'*zVec;
-finalStateError = norm(xVecTrue - x_hat);
+p1finalStateError = norm(xVecTrue - x_hat);
+
+% The values did not improve in this case
+

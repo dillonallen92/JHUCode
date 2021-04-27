@@ -79,7 +79,7 @@ function [h,HMat,id] = Provided_measFxnAzEl_ECI_HW11(xVec,wVec,t,opts)
 
 % Ground station:
 r_ECIVec         = xVec(1:3);
-[r_ECEFVec]      = ECI2ECEF_simple(r_ECIVec, t, opts.tFrameAlign);
+[r_ECEFVec]      = Provided_ECI2ECEF_simple(r_ECIVec, t, opts.tFrameAlign);
 rStationECEF_m   = opts.rStationECEF_m;
 
 % Opts must contain the location of the observing station:

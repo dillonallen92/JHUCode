@@ -50,8 +50,8 @@ rho_m = sqrt((rOriginECEF_m(1).^2) + (rOriginECEF_m(2).^2));
 lat_rad = atan2(rOriginECEF_m(3), rho_m);
 lon_rad = atan2(rOriginECEF_m(2), rOriginECEF_m(1));
 %
-[Rz] = rot(3, lon_rad);
-[Ry] = rot(2, -lat_rad);
+[Rz] = RotZ(lon_rad);
+[Ry] = RotY(-lat_rad);
 %
 T_ECEF2ENV_B4Permute = Ry*Rz;
 P = [0,1,0; 0,0,1; 1,0,0]; % permutation matrix to reorder to ENV
@@ -110,6 +110,15 @@ r = Re_m * [(cosd(lat_deg)*cosd(lon_deg));  cosd(lat_deg)*sind(lon_deg);  sind(l
 [rENV_m] = frame_ECEF2TangentENV(r+[0;1;0],r) %+1 in N
 [rENV_m] = frame_ECEF2TangentENV(r+[0;0;1],r) %+1 in V
 
+end
 
+function zRotationMat = RotZ(theta)
+% theta = omegaEarth * deltaT;
+zRotationMat = [cos(theta), sin(theta), 0;
+-sin(theta), cos(theta), 0;
+0, 0, 1;];
+end
 
-
+function yRotationMat = RotY(theta)
+ yRotationMat = [cos(theta), 0, sin(theta); 0, 1, 0; -sin(theta), 0, cos(theta)];
+end
