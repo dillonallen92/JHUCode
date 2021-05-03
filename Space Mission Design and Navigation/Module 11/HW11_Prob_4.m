@@ -23,7 +23,7 @@ v = [];
 params = 0;
 
 for i = 1 : length(tVec) - 1
-    tspan = [tVec(i) tVec(i+1)];
+    tspan = tVec(1):tVec(i+1)-tVec(i):tVec(i+1);
     [t, x_star, Phi, Gamma_u, Gamma_v] = Provided_dynFxn_2Body_ECI(x0,u,v,tspan,params);
     [h1, H1, ~] = Provided_measFxnAzEl_ECI_HW11(x_star, wVec, tspan(2), opts1);
     [h2, H2, ~] = Provided_measFxnAzEl_ECI_HW11(x_star, wVec, tspan(2), opts2);
