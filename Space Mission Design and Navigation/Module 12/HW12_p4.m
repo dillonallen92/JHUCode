@@ -39,15 +39,68 @@ end
 
 for i = 1 : length(xTrueVecHist)
    errorVec(:,i) = xTrueVecHist(:,i) - x_hat(:,i); 
-   errorRes(i) = norm(errorVec(:,i));
    xVecPosStd(i) = sqrt(P{1,i}(1,1));
    xVecNegStd(i) = -sqrt(P{1,i}(1,1));
+   yVecPosStd(i) = sqrt(P{1,i}(2,2));
+   yVecNegStd(i) = -sqrt(P{1,i}(2,2));
+   zVecPosStd(i) = sqrt(P{1,i}(3,3));
+   zVecNegStd(i) = -sqrt(P{1,i}(3,3));
+   xdotVecPosStd(i) = sqrt(P{1,i}(4,4));
+   xdotVecNegStd(i) = -sqrt(P{1,i}(4,4));
+   ydotVecPosStd(i) = sqrt(P{1,i}(5,5));
+   ydotVecNegStd(i) = -sqrt(P{1,i}(5,5));
+   zdotVecPosStd(i) = sqrt(P{1,i}(6,6));
+   zdotVecNegStd(i) = -sqrt(P{1,i}(6,6));
 end
 
+
+subplot(2,3,1)
 plot(tVec, errorVec(1,:)); hold on;
 plot(tVec, xVecPosStd);
 plot(tVec, xVecNegStd);
 xlabel("time (s)");
 ylabel("Xpos (m)");
+legend('Xpos', '+/- 1 \sigma');
 hold off;
 
+subplot(2,3,2)
+plot(tVec, errorVec(2,:)); hold on;
+plot(tVec, yVecPosStd);
+plot(tVec, yVecNegStd);
+xlabel("time (s)");
+ylabel("Ypos (m)");
+legend('Ypos', '+/- 1 \sigma');
+
+subplot(2,3,3)
+plot(tVec, errorVec(3,:)); hold on;
+plot(tVec, zVecPosStd);
+plot(tVec, zVecNegStd);
+xlabel("time (s)");
+ylabel("Zpos (m)");
+legend('Zpos', '+/- 1 \sigma');
+
+subplot(2,3,4)
+plot(tVec, errorVec(4,:)); hold on;
+plot(tVec, xdotVecPosStd);
+plot(tVec, xdotVecNegStd);
+xlabel("time (s)");
+ylabel("xVel (m/s)");
+legend('xVel', '+/- 1 \sigma');
+
+subplot(2,3,5)
+plot(tVec, errorVec(5,:)); hold on;
+plot(tVec, ydotVecPosStd);
+plot(tVec, ydotVecNegStd);
+xlabel("time (s)");
+ylabel("yVel (m/s)");
+legend('yVel', '+/- 1 \sigma');
+
+subplot(2,3,6)
+plot(tVec, errorVec(6,:)); hold on;
+plot(tVec, zdotVecPosStd);
+plot(tVec, zdotVecNegStd);
+xlabel("time (s)");
+ylabel("zVel (m/s)");
+legend('zVel', '+/- 1 \sigma');
+
+sgtitle('Position and Velocity errors over time');
