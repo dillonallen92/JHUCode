@@ -35,7 +35,17 @@ for i = 1 : length(tVec) - 1
    x_hat(:,i+1) = xVecHist(:,i+1) + K*y(i);
    kh = K*H;
    P{1,i+1} = (eye(size(kh)) - kh)*Pbar;
+   
+   % Chi-Square Stuff
+   
+   % Innovation Eq
+   q_meas(i) = transpose(y(i)) * inv(H * Pbar * transpose(H) + RMat) * y((i));
+   
+   % State Error
+   q_error(i) = transpose(x_hat(:,i) - xTrueVecHist(:,i)) * inv(P{1,i}) * (x_hat(:,i) - xTrueVecHist(:,i));
 end
+
+%% Plotting 
 
 for i = 1 : length(xTrueVecHist)
    errorVec(:,i) = xTrueVecHist(:,i) - x_hat(:,i); 
@@ -104,3 +114,19 @@ ylabel("zVel (m/s)");
 legend('zVel', '+/- 1 \sigma');
 
 sgtitle('Position and Velocity errors over time');
+
+%% Chi-Square stuff 
+
+y_meas = chi2pdf(q_meas, 3);
+y_error = chi2pdf(q_error, 3);
+
+subplot(1,2,1);
+scatter(q_meas, y_meas);
+xlabel("q_meas");
+ylabel("q_meas pdf");
+
+subplot(1,2,2);
+scatter(q_error, y_error);
+xlabel("q_error");
+ylabel("q_error pdf");
+
