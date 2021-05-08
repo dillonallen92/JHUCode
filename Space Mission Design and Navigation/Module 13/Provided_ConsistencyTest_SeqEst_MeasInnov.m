@@ -28,7 +28,7 @@
 % 
 % 2) SMats - The [m x m x k] matrix of innovation covariance matrices. 
 % 
-% 3) plotFlag - flag ot plot(1) or not (0).
+% 3) plotFlag - flag to plot(1) or not (0).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OUTPUTS:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
