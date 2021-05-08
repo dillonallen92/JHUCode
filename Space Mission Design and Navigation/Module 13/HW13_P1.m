@@ -53,7 +53,7 @@ for ell = length(tVec) : -1 : 2
     x_hat_smooth(:,ell-1) = x_hat(:,ell-1) + Smat{1,ell-1} * deltaX;
 end
 
-% Plots
+% Error and Std data
 
 for i = 1 : length(xTrueVecHist)
    % Error Matrices
@@ -73,3 +73,44 @@ for i = 1 : length(xTrueVecHist)
    vNeg3StdSmoothed(i) = -3 * sqrt(Pcell_smooth{1,i}(2,2));
 end
 
+% Plots
+
+% X Vec
+subplot(211);
+plot(tVec, errHist(1,:), 'k-'); hold on; 
+plot(tVec, errHistSmoothed(1,:), 'k--', 'LineWidth', 1)
+plot(tVec, xPos3Std, 'b');
+plot(tVec, xNeg3Std, 'b');
+plot(tVec, xPos3StdSmoothed, 'r--','LineWidth', 0.8);
+plot(tVec, xNeg3StdSmoothed, 'r--', 'LineWidth', 0.8);
+xlabel("time (s)");
+ylabel("X error");
+lgnd = legend('unsmoothed', 'smoothed', ' \pm 3-\sigma unsmoothed', ...
+       '\pm 3-\sigma unsmoothed', '\pm 3-\sigma smoothed', '\pm 3-\sigma smoothed');
+lgnd.Location = 'northeast';
+lgnd.BoxFace.ColorType='truecoloralpha'
+lgnd.BoxFace.ColorData=uint8(255*[1 1 1 0.55]')
+lgnd.NumColumns = 2;
+lgnd.Orientation = 'horizontal';
+hold off;
+
+% Xdot Vec
+subplot(212)
+plot(tVec, errHist(2,:), 'k-'); hold on; 
+plot(tVec, errHistSmoothed(2,:), 'k--', 'LineWidth', 1)
+plot(tVec, vPos3Std, 'b');
+plot(tVec, vNeg3Std, 'b');
+plot(tVec, vPos3StdSmoothed, 'r--','LineWidth', 0.8);
+plot(tVec, vNeg3StdSmoothed, 'r--', 'LineWidth', 0.8);
+xlabel("time (s)");
+ylabel("v_x error");
+lgnd = legend('unsmoothed', 'smoothed', ' \pm 3-\sigma unsmoothed', ...
+       '\pm 3-\sigma unsmoothed', '\pm 3-\sigma smoothed', '\pm 3-\sigma smoothed');
+lgnd.Location = 'southeast';
+lgnd.BoxFace.ColorType='truecoloralpha'
+lgnd.BoxFace.ColorData=uint8(255*[1 1 1 0.55]')
+lgnd.NumColumns = 2;
+lgnd.Orientation = 'horizontal';
+hold off;
+
+sgtitle("Position and Velocity Errors (Unsmoothed vs Smoothed)");
