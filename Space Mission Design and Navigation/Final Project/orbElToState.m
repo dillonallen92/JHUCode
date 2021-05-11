@@ -15,7 +15,7 @@ function [r,v] = orbElToState(a,e,i,Omega,omega,theta, mu)
     % Perform 3-1-3 Rotation on rPerifocal and vPerifocal
     r=C_313*rPerifocal;
 
-    v=C_313*vPerifocal * secondsInDay;
+    v=C_313*vPerifocal;
 
 
  

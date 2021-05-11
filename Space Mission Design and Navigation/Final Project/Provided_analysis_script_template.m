@@ -10,26 +10,32 @@ rng(seedNumber)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MISSION DESIGN CODE:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear, clc, close all;
 
 %set the intitial orbital parameters
-figNum=1;                   %figure number for plotting
-rE=6378.15;                 %radius of the Earth (km)
-muE=398600.4418;            %graviational parameter of the Earth (km^3/s^2)
-delT=100;                   %time increment (seconds)
-finalTime=7*86400;          %final time ~7 days (seconds)
-nB=2*pi/(86400);            %rotation rate of the Earth
+figNum=1;                   % figure number for plotting
+rE=6378.15;                 % radius of the Earth (km)
+muE=398600.4418;            % graviational parameter of the Earth (km^3/s^2)
+delT=100;                   % time increment (seconds)
+finalTime=7*86400;          % final time ~7 days (seconds)
+nB=2*pi/(86400);            % rotation rate of the Earth
 
-a=rE+20000;                 %semi-major axis (km) Change: Dillon - 20,000 km (05.09.2021)
-ecc=0.2;                    %eccentricity Change: Dillon - 0.2 (05.09.2021)
-inc=70*pi/180;              %inclination (rad) Change: Dillon - 70deg (05.09.2021)
-w=10*pi/180;                %argument of peripsis (rad) Change: Dillon - 10deg (05.09.2021)
-Om=10*pi/180;               %right ascension of the ascending node (rad) Change: Dillon - 10deg (05.09.2021)
-theta=30*pi/180;            %true anomaly (rad) Change: Dillon - 30deg (05.09.2021)
+a = rE+25000;               % semi-major axis (km)
+ecc = 0.5;                  % eccentricity
+inc = 75*pi/180;            % inclination (rad) 
+w = -80*pi/180;             % argument of peripsis (rad)
+Om = 0*pi/180;              % right ascension of the ascending node (rad) 
+theta = 0*pi/180;           % true anomaly (rad) 
 
 
 %ground station locations
-GS(??).lat=??;
-GS(??).long=??;
+% GS(1) - Cordoba, Argentina (COA)
+GS(1).lat=-31.416668 * pi/180;
+GS(1).long=-64.183334 * pi/180;
+
+% GS(2) - Anchorage, Alaska (DSN)
+GS(2).lat = 66.160507 * pi/180;
+GS(2).long = -153.369141 * pi/180;
 
 
 %parameters for ionosphere instrument
@@ -46,19 +52,19 @@ longUb=10*pi/180;           %maximize time below this longitude (rad)
 
 
 
-%convert the orbital elements into a six-state
-%???
+% convert the orbital elements into a six-state
+% Function Completed 5.10.2021
 [rV,vV]=orbElToState(a,ecc,inc,Om,w,theta,muE);    %reuse from homework or write this function
 state0=[rV;vV];             %initial state
 
-%propagate the s/c for a week
+% propagate the s/c for a week
 options=odeset('RelTol',1e-10,'AbsTol',1e-10);
 tVec=0:delT:finalTime;
 [t,x] = ode113(@(t,x)twoBody(t,x,muE),tVec,state0,options);   %use the eoms given with the assignment
 
 
-%make some plots to visualize the orbit, these funciton will be provided---
-index=1000;   %index of the time to plot the position of the spacecraft and ground stations
+% make some plots to visualize the orbit, these funciton will be provided---
+index=1000;   % index of the time to plot the position of the spacecraft and ground stations
 plotOrb(x,figNum)
 plotTimeStamp(x,t,index,rE,nB,GS,figNum)
 %-------------------------------------------------------------------------
@@ -95,11 +101,14 @@ mdPointsSa=totTimeSa/3600
 
 
 %visually check when contacts exist angV<90 deg.
-angV=getAngStation(GS(1),posFixed);
+angV1=getAngStation(GS(1),posFixed);
+angV2 = getAngStation(GS(2), posFixed);
 figure(2);
 hold on;
-hp=plot(tVec/86400,angV*180/pi);
+hp=plot(tVec/86400,angV1*180/pi);
 hp.LineWidth=3;
+sp = plot(tVec/86400, angV2*180/pi);
+sp.LineWidth = 3;
 ax=gca;
 ax.FontSize=20;
 ax.FontName='Times New Roman';
