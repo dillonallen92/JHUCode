@@ -19,12 +19,12 @@ delT=100;                   %time increment (seconds)
 finalTime=7*86400;          %final time ~7 days (seconds)
 nB=2*pi/(86400);            %rotation rate of the Earth
 
-a=rE+??;                  %semi-major axis (km)
-ecc=??;                   %eccentricity
-inc=??;                   %inclination (rad)
-w=??;                     %argument of peripsis (rad)
-Om=??;                    %right ascension of the ascending node (rad)
-theta=??;                 %true anomaly (rad)
+a=rE+20000;                 %semi-major axis (km) Change: Dillon - 20,000 km (05.09.2021)
+ecc=0.2;                    %eccentricity Change: Dillon - 0.2 (05.09.2021)
+inc=70*pi/180;              %inclination (rad) Change: Dillon - 70deg (05.09.2021)
+w=10*pi/180;                %argument of peripsis (rad) Change: Dillon - 10deg (05.09.2021)
+Om=10*pi/180;               %right ascension of the ascending node (rad) Change: Dillon - 10deg (05.09.2021)
+theta=30*pi/180;            %true anomaly (rad) Change: Dillon - 30deg (05.09.2021)
 
 
 %ground station locations
@@ -67,7 +67,7 @@ posIn=x(:,1:3);                                             %convert the inertia
 posFixed=posHistInToPosHistFixed(posIn,t,nB);               %use the function provided with the function
 
 %???
-[altV,latV,longV]=posFixedToAltLatLong(posFixed,rE);        %write this yourself
+[altV,latV,longV]=posFixedToAltLatLong(posFixed,rE);        %write this yourself (page 39)
 
 
 %These function are given------------------------------------------
