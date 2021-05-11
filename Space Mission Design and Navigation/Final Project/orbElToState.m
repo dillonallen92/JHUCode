@@ -1,6 +1,4 @@
 function [r,v] = orbElToState(a,e,i,Omega,omega,theta, mu)
-   
-    secondsInDay = 24*3600; % days / second
 
     C_313=(C3(omega)*C1(i)*C3(Omega))';
 

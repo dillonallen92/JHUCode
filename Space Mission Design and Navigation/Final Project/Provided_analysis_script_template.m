@@ -12,7 +12,7 @@ rng(seedNumber)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear, clc, close all;
 
-%set the intitial orbital parameters
+% set the intitial orbital parameters
 figNum=1;                   % figure number for plotting
 rE=6378.15;                 % radius of the Earth (km)
 muE=398600.4418;            % graviational parameter of the Earth (km^3/s^2)
@@ -20,10 +20,10 @@ delT=100;                   % time increment (seconds)
 finalTime=7*86400;          % final time ~7 days (seconds)
 nB=2*pi/(86400);            % rotation rate of the Earth
 
-a = rE+25000;               % semi-major axis (km)
-ecc = 0.5;                  % eccentricity
+a = rE+22000;               % semi-major axis (km)
+ecc = 0.7;                  % eccentricity
 inc = 75*pi/180;            % inclination (rad) 
-w = -80*pi/180;             % argument of peripsis (rad)
+w = -90*pi/180;             % argument of peripsis (rad)
 Om = 0*pi/180;              % right ascension of the ascending node (rad) 
 theta = 0*pi/180;           % true anomaly (rad) 
 
@@ -38,17 +38,17 @@ GS(2).lat = 66.160507 * pi/180;
 GS(2).long = -153.369141 * pi/180;
 
 
-%parameters for ionosphere instrument
-alt0=20000;                 %maximize the time above this altitude (km)
-lat0=70*pi/180;             %maximize the time above this latitude (rad)
+% parameters for ionosphere instrument
+alt0=20000;                 % maximize the time above this altitude (km)
+lat0=70*pi/180;             % maximize the time above this latitude (rad)
 
 
-%parameters for South Atlantic Anomaly 
-latLb=-10*pi/180;           %maximimize time above this latitude (rad)
-latUb=10*pi/180;            %maximize time below this latitude (rad)
+% parameters for South Atlantic Anomaly 
+latLb=-10*pi/180;           % maximimize time above this latitude (rad)
+latUb=10*pi/180;            % maximize time below this latitude (rad)
 
-longLb=-10*pi/180;          %maximize time above this longitude (rad)
-longUb=10*pi/180;           %maximize time below this longitude (rad) 
+longLb=-10*pi/180;          % maximize time above this longitude (rad)
+longUb=10*pi/180;           % maximize time below this longitude (rad) 
 
 
 
@@ -60,7 +60,7 @@ state0=[rV;vV];             %initial state
 % propagate the s/c for a week
 options=odeset('RelTol',1e-10,'AbsTol',1e-10);
 tVec=0:delT:finalTime;
-[t,x] = ode113(@(t,x)twoBody(t,x,muE),tVec,state0,options);   %use the eoms given with the assignment
+[t,x] = ode113(@(t,x)twoBody(t,x,muE),tVec,state0,options);   % use the eoms given with the assignment
 
 
 % make some plots to visualize the orbit, these funciton will be provided---
@@ -69,38 +69,38 @@ plotOrb(x,figNum)
 plotTimeStamp(x,t,index,rE,nB,GS,figNum)
 %-------------------------------------------------------------------------
 
-posIn=x(:,1:3);                                             %convert the inertial position history to the fixed frame
-posFixed=posHistInToPosHistFixed(posIn,t,nB);               %use the function provided with the function
+posIn=x(:,1:3);                                             % convert the inertial position history to the fixed frame
+posFixed=posHistInToPosHistFixed(posIn,t,nB);               % use the function provided with the function
 
 %???
-[altV,latV,longV]=posFixedToAltLatLong(posFixed,rE);        %write this yourself (page 39)
+[altV,latV,longV]=posFixedToAltLatLong(posFixed,rE);        % write this yourself (page 39)
 
 
-%These function are given------------------------------------------
-%ionisphere parameters
+% These function are given------------------------------------------
+% ionisphere parameters
 binAltV=aboveValBin(altV,alt0);
 binLatV=aboveValBin(latV,lat0);
 
-%times when both contraints are satisfied
+% times when both contraints are satisfied
 binIon=binAltV.*binLatV;
 
-%find the total time when both constraints are satisfied
+% find the total time when both constraints are satisfied
 totTimeIonSat=sum(binIon)*delT;
 mdPointsIon=totTimeIonSat/3600
 
 
-%parameters for South Atlantic Anomaly
+% parameters for South Atlantic Anomaly
 binLatSaV=aboveBelowBin(latV,latLb,latUb);
 binLongSaV=aboveBelowBin(longV,longLb,longUb);
 
-%times when both contraints are satisfied for South Atlantic Anomaly
+% times when both contraints are satisfied for South Atlantic Anomaly
 binSa=binLatSaV.*binLongSaV;
 totTimeSa=sum(binSa)*delT;
 mdPointsSa=totTimeSa/3600
 %--------------------------------------------------------------------------------
 
 
-%visually check when contacts exist angV<90 deg.
+% visually check when contacts exist angV<90 deg.
 angV1=getAngStation(GS(1),posFixed);
 angV2 = getAngStation(GS(2), posFixed);
 figure(2);
