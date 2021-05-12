@@ -21,7 +21,7 @@ finalTime=7*86400;          % final time ~7 days (seconds)
 nB=2*pi/(86400);            % rotation rate of the Earth
 
 a = rE+22000;               % semi-major axis (km)
-ecc = 0.7;                  % eccentricity
+ecc = 0.6;                  % eccentricity
 inc = 75*pi/180;            % inclination (rad) 
 w = -90*pi/180;             % argument of peripsis (rad)
 Om = 0*pi/180;              % right ascension of the ascending node (rad) 
@@ -33,7 +33,7 @@ theta = 0*pi/180;           % true anomaly (rad)
 GS(1).lat=-31.416668 * pi/180;
 GS(1).long=-64.183334 * pi/180;
 
-% GS(2) - Anchorage, Alaska (DSN)
+% GS(2) - Anchorage, Alaska 
 GS(2).lat = 66.160507 * pi/180;
 GS(2).long = -153.369141 * pi/180;
 
