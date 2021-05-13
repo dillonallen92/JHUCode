@@ -32,11 +32,12 @@ theta = 0*pi/180;           % true anomaly (rad)
 % GS(1) - Cordoba, Argentina (COA)
 GS(1).lat=-31.416668 * pi/180;
 GS(1).long=-64.183334 * pi/180;
+statCont.r1 = 'US';
 
 % GS(2) - Anchorage, Alaska 
 GS(2).lat = 66.160507 * pi/180;
 GS(2).long = -153.369141 * pi/180;
-
+statCont.r2 = 'Non-US';
 
 % parameters for ionosphere instrument
 alt0=20000;                 % maximize the time above this altitude (km)
@@ -223,7 +224,7 @@ measOpts                   = opts_multiStation; %to match naming below.
 
 % Clock Parameters:
 clkSigma0_phase    = 10e-9;
-clkSigma0_freq     = 1e-9; % Ryan updated, 5.12.2021
+clkSigma0_freq     = 1e-9;  % Ryan updated, 5.12.2021
 clkSigma0_freqRate = 1e-15; % effectively 0.
 % Scalar values for tuning:
 stateScalar_m   = 1e3; % m will be squared below
@@ -268,8 +269,14 @@ finalError   = norm(xStarCells{end} - xTrueVecHist{end});
 %
 % chi-square measurements test
 % ???
+% TODO: Ask if okay to use provided Chi-Squared functions...
+% function [epsilonVec, epsilonBarNu, Exp_epsilon] =...
+%    Provided_ConsistencyTest_SeqEst_MeasInnov(nuVecMat, SMats, plotFlag)
 %
-%
+
+plotFlag = 1;
+Provided_ConsistencyTest_SeqEst_MeasInnov(nuVecCells, SCells, plotFlag);
+
 % State error:
 for ii = 1:nk
     if isempty(xStarCells{ii})
@@ -281,7 +288,9 @@ for ii = 1:nk
 end
 % chi-square state error test
 % ???
-
+% function [epsilonVec, epsilonBarNu, Exp_epsilon] =...
+%    Provided_ConsistencyTest_SeqEst_StateError(xeVecMat, PMats, plotFlag)
+Provided_ConsistencyTest_SeqEst_StateError(xeMat, PiMats, plotFlag)
 
 %% Pass times: (visual inspection)
 gndStatVisb = zeros(1,nk);
@@ -460,4 +469,51 @@ plot3(0,0,0,'r*')
     
     
 %% Cost of solution:
-%     ???
+% Ground Station Cost (per)
+costAWS = 100000;
+costDSN = 400000;
+costHumanOp = 100000;
+
+% Comm Cost
+costCommUS = 10000;
+costCommNon_US = 100000;
+costCommAntartica = 500000;
+
+% Clock Costs
+costVCTCXO = 0;
+costOCXO = 10000;
+costRubidium = 500000;
+costCesium = 1000000;
+
+% Initialize Cost
+cost = 0;
+if isequal(navSensors.stateType,'AWS')
+    cost = cost + costHumanOp + costAWS*2;
+end
+
+if isequal(statCont.r1,'Non-US')
+   cost = cost +  100000;
+else
+   cost = cost + 10000;
+end
+
+if isequal(statCont.r2,'Non-US')
+       cost = cost +  100000;
+else
+   cost = cost + 10000;
+end
+
+switch(clockType)
+    case 'VCTCXO'
+        cost = cost + costVCTCXO;
+    case 'OCXO'
+        cost = cost + costOCXO;
+    case 'Rubidium'
+        cost = cost + costRubidium;
+    case 'Cesium'
+        cost = cost + costCesium;
+    otherwise
+        disp('Clock not found?');
+end
+
+fprintf("Total cost of the system: %d\n", cost);
