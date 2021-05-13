@@ -43,7 +43,7 @@
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [rVec_ECEF] = Provided_ECI2ECEF_simple(rVec_ECI,...
+function [rVec_ECEF] = ECI2ECEF_simple(rVec_ECI,...
     t, tFrameAlign, varargin)
 
 omega_radps = (2*pi)/86400; % close enough.  

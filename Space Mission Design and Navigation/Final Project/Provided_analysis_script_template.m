@@ -130,15 +130,31 @@ box on;
 %%%%%%%%%%%%%%%
 
 %STEP 1:  choose a navSensor statetype
-navSensors.stateType = 'GPS'; measFxnHand=@Provided_measFxnNavSol_ECI;   
-% navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
+% navSensors.stateType = 'GPS'; measFxnHand=@Provided_measFxnNavSol_ECI;   
+navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
 % navSensors.stateType = 'DSN'; measFxnHand=@Provided_measFxnRange_ECI_multi;
 % navSensors.stateType = 'RadioShack'; measFxnHand = @Provided_measFxn_TDOA_and_FDOA_ECEFStat_Multi;
 %
 %???  Get performance from project assignment for measurement noise
 %performance, RMat=???.  
+
+% For AWS
+measurementNoiseAWS = 1/15^2;
+
+% For DSN
+% measurementNosieDSN = 1;
+
 % If multiple stations are used, then RMAT needs to grow (diagonally) to
 % match.  Write this yourself.
+
+% For two AWS Stations
+RMat = measurementNoiseAWS * eye(2);
+
+% For two DSN Stations
+% R = measurementNosieDSN * eye(2);
+
+% Mix:
+% R = [measurementNoiseAWS, 0; 0, measurementNoiseDSN;];
 
 %STEP 2:  Define measOpts, contains information for the station positions in the
 %measurement models in the Earth fixed frame
@@ -164,7 +180,7 @@ clockType = "VCTCXO";
 % clockType = "Rubidium";
 % clockType = "Cesium";
 %
-%???  Get performance from project assignment for clock performance and characteristice
+%???  Get performance from project assignment for clock performance and characteristics
 
 
 
@@ -175,22 +191,39 @@ clockType = "VCTCXO";
 % transform GS(??) into ECEF coordinates (in units of meters) and store 
 % into 'gndStationVecs'. Each column of three represents the position of 
 % a single ground station
-%
-% ??? - fill in code here to do this
-%
 
+GS1Lat = GS(1).lat;
+GS1Long = GS(1).long;
+GS2Lat = GS(2).lat;
+GS2Long = GS(2).long;
+% Since we are converting ground stations we will use earths radius
+rEmeters = rE*1000;
+[x1,y1,z1] = lla2ecef(GS1Lat, GS1Long, rEmeters);
+gndStationVecs = zeros(3,2);
+gndStationVecs(:,1) = [x1;y1;z1];
+[x2, y2, z2] = lla2ecef(GS2Lat, GS2Long, rEmeters);
+gndStationVecs(:,2) = [x2;y2;z2];
 % Nav code uses meters, not kilometers, so convert:
 x0_True=zeros(size(x));
 x0_True(:,1:3)=x(:,1:3)*1000;    %convert the inertial position to meters
 x0_True(:,4:6)=x(:,4:6)*1000;    %convert the inertial position to meters/second
 x0_True = x0_True(1,:)';
 
+% measOpts
+measOpts_stat1.rStationECEF_m  = gndStationVecs(:,1);
+measOpts_stat1.tFrameAlign = 0;
+measOpts_stat2.rStationECEF_m = gndStationVecs(:,2);
+measOpts_stat2.tFrameAlign = 0;
+opts_multiStation{1}       = measOpts_stat1;  %define cell and store 1
+opts_multiStation{2}       = measOpts_stat2;  %store to cell entry 2
+measOpts                   = opts_multiStation; %to match naming below.
+
 
 %% Truth-Model Simulation:
 
 % Clock Parameters:
 clkSigma0_phase    = 10e-9;
-clkSigma0_freq     = 1e-7;
+clkSigma0_freq     = 1e-9; % Ryan updated, 5.12.2021
 clkSigma0_freqRate = 1e-15; % effectively 0.
 % Scalar values for tuning:
 stateScalar_m   = 1e3; % m will be squared below
@@ -221,10 +254,10 @@ for ii = 1:nk
     QCells{ii} = QMat;
 end
 % Filter:
-[xStarCells,PiCells,nuVecCells,SCells,debug,stateInfo] =...
+[xStarCells,PiCells,nuVecCells,SCells,debug] =...
     Provided_CompAlgForExtSeqProcWSNC_Cells(YCells,IDsCells,RCells,...
     xStar_0Vec,PBarMat0,tVec,dynFxnHand,dynOpts,measFxnHand,measOpts,...
-    QCells,[],[]);
+    QCells);
 
 
 %% Errors:

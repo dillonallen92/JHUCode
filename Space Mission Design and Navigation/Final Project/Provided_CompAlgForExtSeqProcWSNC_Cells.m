@@ -151,10 +151,20 @@ for ii = 1:k
     %
     % Match:
     %??? match IDs and trim to the common subset
-    Yi        = Yi(???);
-    GiVec     = GiVec(???);
-    HTildeMat = HTildeMat(???,:);
-    Ri        = Ri(???,???);
+    % Yi        = Yi(???);
+    % GiVec     = GiVec(???);
+    % HTildeMat = HTildeMat(???,:);
+    % Ri        = Ri(???,???);
+    
+    [IDcommoni,IMeas,IEst] = intersect(IDsi,IDs);   
+
+    Yi        = Yi(IMeas);   
+
+    GiVec     = GiVec(IEst);   
+
+    HTildeMat = HTildeMat(IEst,:);   
+
+    Ri        = Ri(IMeas,IMeas);
     %
     yiVec = Yi - GiVec;
     Si    = (HTildeMat * Pbar_i * HTildeMat') + Ri;
