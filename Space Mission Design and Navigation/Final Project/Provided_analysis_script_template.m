@@ -20,9 +20,10 @@ delT=100;                   % time increment (seconds)
 finalTime=7*86400;          % final time ~7 days (seconds)
 nB=2*pi/(86400);            % rotation rate of the Earth
 
+% Vary These
 a = rE+22000;               % semi-major axis (km)
-ecc = 0.6;                  % eccentricity
-inc = 75*pi/180;            % inclination (rad) 
+ecc = 0.7;                  % eccentricity
+inc = 85*pi/180;            % inclination (rad) 
 w = -90*pi/180;             % argument of peripsis (rad)
 Om = 0*pi/180;              % right ascension of the ascending node (rad) 
 theta = 0*pi/180;           % true anomaly (rad) 
@@ -33,18 +34,18 @@ theta = 0*pi/180;           % true anomaly (rad)
 % Keeping this constant
 GS(1).lat=-31.416668 * pi/180;
 GS(1).long=-64.183334 * pi/180;
-statCont.r1 = 'US';
+statCont.r1 = 'Non-US';
 
 % GS(2) - Anchorage, Alaska 
 % Can also be Berlin, Germany
 
-% GS(2).lat = 66.160507 * pi/180;
-% GS(2).long = -153.369141 * pi/180;
-% statCont.r2 = 'Non-US';
+GS(2).lat = 66.160507 * pi/180;
+GS(2).long = -153.369141 * pi/180;
+statCont.r2 = 'US';
 
-GS(2).lat = 52.520008 * pi/180;
-GS(2).long = 13.404954 * pi/180;
-statCont.r2 = 'Non-US';
+% GS(2).lat = 52.520008 * pi/180;
+% GS(2).long = 13.404954 * pi/180;
+% statCont.r2 = 'Non-US';
 
 
 % parameters for ionosphere instrument
@@ -140,8 +141,8 @@ box on;
 
 %STEP 1:  choose a navSensor statetype
 % navSensors.stateType = 'GPS'; measFxnHand=@Provided_measFxnNavSol_ECI;   
-% navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
-navSensors.stateType = 'DSN'; measFxnHand=@Provided_measFxnRange_ECI_multi;
+navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
+% navSensors.stateType = 'DSN'; measFxnHand=@Provided_measFxnRange_ECI_multi;
 % navSensors.stateType = 'RadioShack'; measFxnHand = @Provided_measFxn_TDOA_and_FDOA_ECEFStat_Multi;
 %
 %???  Get performance from project assignment for measurement noise
@@ -190,9 +191,10 @@ end
 %     measOpts                   = opts_multiStation; %to match naming below.
 
 %STEP3:  choose clock
-clockType = "VCTCXO";
+
+% clockType = "VCTCXO";
 % clockType = "OCXO";
-% clockType = "Rubidium";
+clockType = "Rubidium";
 % clockType = "Cesium";
 %
 %???  Get performance from project assignment for clock performance and characteristics
@@ -584,6 +586,10 @@ costCesium = 1000000;
 cost = 0;
 if isequal(navSensors.stateType,'AWS')
     cost = cost + costHumanOp + costAWS*2;
+end
+
+if isequal(navSensors.stateType,'DSN')
+    cost = cost + costHumanOp + costDSN*2;
 end
 
 if isequal(statCont.r1,'Non-US')
