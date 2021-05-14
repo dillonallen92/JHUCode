@@ -30,14 +30,22 @@ theta = 0*pi/180;           % true anomaly (rad)
 
 %ground station locations
 % GS(1) - Cordoba, Argentina (COA)
+% Keeping this constant
 GS(1).lat=-31.416668 * pi/180;
 GS(1).long=-64.183334 * pi/180;
 statCont.r1 = 'US';
 
 % GS(2) - Anchorage, Alaska 
-GS(2).lat = 66.160507 * pi/180;
-GS(2).long = -153.369141 * pi/180;
+% Can also be Berlin, Germany
+
+% GS(2).lat = 66.160507 * pi/180;
+% GS(2).long = -153.369141 * pi/180;
+% statCont.r2 = 'Non-US';
+
+GS(2).lat = 52.520008 * pi/180;
+GS(2).long = 13.404954 * pi/180;
 statCont.r2 = 'Non-US';
+
 
 % parameters for ionosphere instrument
 alt0=20000;                 % maximize the time above this altitude (km)
@@ -132,24 +140,30 @@ box on;
 
 %STEP 1:  choose a navSensor statetype
 % navSensors.stateType = 'GPS'; measFxnHand=@Provided_measFxnNavSol_ECI;   
-navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
-% navSensors.stateType = 'DSN'; measFxnHand=@Provided_measFxnRange_ECI_multi;
+% navSensors.stateType = 'AWS'; measFxnHand=@Provided_measFxnRange_ECI_multi;  
+navSensors.stateType = 'DSN'; measFxnHand=@Provided_measFxnRange_ECI_multi;
 % navSensors.stateType = 'RadioShack'; measFxnHand = @Provided_measFxn_TDOA_and_FDOA_ECEFStat_Multi;
 %
 %???  Get performance from project assignment for measurement noise
 %performance, RMat=???.  
 
 % For AWS
-measurementNoiseAWS = 1/15^2;
+measurementNoiseAWS = 15^2;
 
 % For DSN
-% measurementNosieDSN = 1;
+measurementNoiseDSN = 1;
 
 % If multiple stations are used, then RMAT needs to grow (diagonally) to
 % match.  Write this yourself.
 
 % For two AWS Stations
-RMat = measurementNoiseAWS * eye(2);
+if isequal(navSensors.stateType,'AWS')
+    RMat = measurementNoiseAWS * eye(2);
+elseif isequal(navSensors.stateType,'DSN')
+    RMat = measurementNoiseDSN * eye(2);
+else
+    disp('Not a valid station?(ignoring GPS)');
+end
 
 % For two DSN Stations
 % R = measurementNosieDSN * eye(2);
@@ -433,7 +447,88 @@ zlabel('z')
 %
 % ???
 %
+% Check if IDCells are empty... If so, propagate the covariance. Otherwise,
+% reset until empty again
+% Initial State Vector
+% clkSigma0_phase    = 10e-9;
+% clkSigma0_freq     = 1e-9;  % Ryan updated, 5.12.2021
+% clkSigma0_freqRate = 1e-15; % effectively 0.
+% P covariance Value: phase_error = 10ns, freq_error = 1e-9 again
+x0Clock = [clkSigma0_phase; clkSigma0_freq; clkSigma0_freqRate];
+PClockInit = diag(x0Clock);
+PClockCells{1} = PClockInit;
+uClock = 0; vClock = 0;
 
+% Clock QMat
+switch(clockType)
+    case 'VCTCXO'
+        sigma1clock = 2.24e-11;
+        sigma2clock = 4.44e-10;
+        sigma3clock = 0;
+    case 'OCXO'
+        sigma1clock = 1.12e-11;
+        sigma2clock = 7.04e-11;
+        sigma3clock = 0;
+    case 'Rubidium'
+        sigma1clock = 2.24e-12;
+        sigma2clock = 5.06e-13;
+        sigma3clock = 0;
+    case 'Cesium'
+        sigma1clock = 1e-10;
+        sigma2clock = 2.81e-14;
+        sigma3clock = 0;
+    otherwise
+        disp('Clock not found?');
+end
+
+QMatClock = diag([sigma1clock; sigma2clock; sigma3clock]);
+xClockOut = x0Clock;
+for idCount = 1 : length(IDsCells)-1
+    % dynamics for each time step
+    tVecClock = [tVec(idCount), tVec(idCount+1)];
+    [tClockOut, xClockOut, PhiClock, GuClock, GvClock] = ... 
+        Provided_dynFxnHand_singleClockModel_ZT(xClockOut, uClock, vClock, tVecClock);
+    % Check the current IDsCell. If empty, that means no ground contact.
+    % If no ground contact, propagate the state from that time to another
+    % PClockCells{idCount+1} = PhiClock * PClockCells{idCount} *
+    % transpose(PhiClock) + GuClock * QMatClock * transpose(GuClock);
+    % else, PClockCells{idCount+1} = PClockInit
+    
+    if isempty(IDsCells{idCount})
+        PClockCells{idCount+1} = PhiClock * PClockCells{idCount} * transpose(PhiClock) + ...
+                                 GuClock * QMatClock * transpose(GuClock);
+    else
+        PClockCells{idCount+1} = PClockInit;
+    end    
+end
+
+nPClockCells = length(PClockCells);
+for ii = 1:nPClockCells
+   phaseErrorVec(ii) = sqrt(PClockCells{ii}(1,1));
+   freqErrorVec(ii) = sqrt(PClockCells{ii}(2,2));
+   freqPhaseErrorVec(ii) = sqrt(PClockCells{ii}(3,3));
+end
+
+clockLenVec = 1:nPClockCells;
+clockFigTitle = sprintf('%s clock error',clockType);
+figure('name', clockFigTitle)
+subplot(311)
+plot(clockLenVec, phaseErrorVec);
+xlabel('index');
+ylabel('error');
+title('Phase Error over Time');
+
+subplot(312)
+plot(clockLenVec, freqErrorVec);
+xlabel('index');
+ylabel('error');
+title('Frequency Error over Time');
+
+subplot(313)
+plot(clockLenVec, freqPhaseErrorVec);
+xlabel('index');
+ylabel('error');
+title('Frequency Phase Error over Time');
 
 %% Plotting the solution: (Visual verification that the location are appropriate)
 figure('name','2D Earth')
