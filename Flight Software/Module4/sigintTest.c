@@ -46,15 +46,11 @@ int main()
 
     while(1)
     {
-        val1 = val;
+        val1 = incr;
         printf("%d\n", val);
+        fflush(stdout);
         sleep(1);
         val = val + incr;
-        diff = val - val1;
-        if (diff >= 2){
-            printf("SIGINT Pressed Twice. Exiting Now\n");
-            return 1;
-        }
     }
     return 0;
 }
