@@ -17,9 +17,10 @@ typedef struct Task
     int taskID;
     int originalPriority;
     int currentPriority;
-    int resourceIDDesired;
     int resourceIDLocked;
+    int resourceIDDesired;
     int tickToStart;
+    int resourceLockDuration;
     int numTicksLocked;
 } Task;
 
@@ -38,11 +39,6 @@ int main(int argc, char** argv)
     {
         printf("Not enough input arguments");
     }else{
-        for(int i = 1; i < argc; i++)
-        {
-            printf("Value %d: %d \n", i, atoi(argv[i]));
-        }
-
         /* Command Line Inputs:
          * 1.  Task 1 Priority
          * 2.  Task 1 Resource ID
@@ -69,12 +65,21 @@ int main(int argc, char** argv)
         taskArray[2].resourceIDDesired = atoi(argv[10]);
         taskArray[2].tickToStart       = atoi(argv[11]);
         taskArray[2].numTicksLocked    = atoi(argv[12]);
+
+
         taskArray[0].currentPriority   = taskArray[0].originalPriority;
-        taskArray[0].resourceIDLocked  = 0;
         taskArray[1].currentPriority   = taskArray[1].originalPriority;
-        taskArray[1].resourceIDLocked  = 0;
         taskArray[2].currentPriority   = taskArray[2].originalPriority;
+
+
+        taskArray[0].resourceIDLocked  = 0;
+        taskArray[1].resourceIDLocked  = 0;
         taskArray[2].resourceIDLocked  = 0;
+
+        taskArray[0].resourceLockDuration = taskArray[0].numTicksLocked;
+        taskArray[1].resourceLockDuration = taskArray[1].numTicksLocked;
+        taskArray[2].resourceLockDuration = taskArray[2].numTicksLocked;
+
         do
         {
             /*
@@ -83,30 +88,40 @@ int main(int argc, char** argv)
                 * 2. run task on that task
                 * 3. update the priority 
                 */
-            // printf("tick #: %d\n", tick);
 
             run_task(get_next_task_to_run());
-            printf("Tick %d: Task1 - %d %d %d, Task2 - %d %d %d, Task 3 - %d %d %d\n",
+            printf("\nTick %d: Task1 - %d %d %d, Task2 - %d %d %d, Task 3 - %d %d %d\n",
                     tick, taskArray[0].currentPriority, taskArray[0].originalPriority, taskArray[0].resourceIDLocked,
                     taskArray[1].currentPriority, taskArray[1].originalPriority, taskArray[1].resourceIDLocked,
                     taskArray[2].currentPriority, taskArray[2].originalPriority, taskArray[2].resourceIDLocked);        
 
             tick++;
+            update_priority();
         }while(tick <= 40);       
     }
-    /*
-    taskArray[0].taskID = 1;
-    taskArray[1].taskID = 2;
-    taskArray[2].taskID = 3; 
-    */
-    // update_priority();
 }
 
 void update_priority()
 {
     for(int i = 0; i < 3; i++)
     {
+        for(int j = 0; j < 3; j++)
+        {
+            
+            if(taskArray[i].resourceIDLocked == taskArray[j].resourceIDDesired && tick == taskArray[j].tickToStart)
+            {
+                if(taskArray[i].currentPriority < taskArray[j].currentPriority)
+                {
+                    taskArray[i].currentPriority = taskArray[j].currentPriority;
+                    taskArray[j].tickToStart = taskArray[j].tickToStart + taskArray[i].numTicksLocked;
+                }
+            }
 
+            if(taskArray[i].resourceIDLocked == 0)
+            {
+                taskArray[i].currentPriority = taskArray[i].originalPriority;
+            }
+        }
     }
 }
 
@@ -123,46 +138,19 @@ void run_task(int task_id)
         {
             taskArray[taskArrayID].resourceIDLocked  = 0;
             taskArray[taskArrayID].resourceIDDesired = 0;
-            taskArray[taskArrayID].currentPriority = taskArray[taskArrayID].originalPriority;
-        }
-            
+        } 
     }
 }
 
 int get_next_task_to_run()
 {
-    int blockCounter = 0;
-    int task_id;
-    // loop through tasks, 
+    int task_id = 0;
     for(int i = 0; i < 3; i++)
     {
-        if(tick == taskArray[i].tickToStart)
+        if(tick >= taskArray[i].tickToStart && tick <= (taskArray[i].tickToStart + taskArray[i].resourceLockDuration))
         {
-            for(int j = 0; j < 3; j++)
-            {
-                if (i != j)
-                {
-                    if(taskArray[i].resourceIDDesired != taskArray[j].resourceIDLocked)
-                    {
-                        blockCounter++;
-                    }else
-                    {
-                        if(taskArray[i].originalPriority > taskArray[j].originalPriority)
-                        {
-                            taskArray[j].currentPriority = taskArray[i].originalPriority;
-                            taskArray[i].tickToStart = taskArray[i].tickToStart + taskArray[j].numTicksLocked;
-                            task_id = j+1;
-                        }
-                    }
-                }
-                
-            }
-            if(blockCounter == 2)
-            {
-                task_id = i+1;
-            }
+            task_id = i+1;
         }
     }
-
     return task_id;
 }
