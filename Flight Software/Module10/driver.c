@@ -24,7 +24,7 @@ typedef struct Task
     int numTicksLocked;
 } Task;
 
-
+ 
 struct Task taskArray[3];
 int tick = 0;
 
