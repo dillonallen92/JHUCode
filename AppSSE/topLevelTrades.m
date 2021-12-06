@@ -20,3 +20,4 @@ ve = g0*Isp;            % m/s
 mf = m0*exp(-dV/ve);    % kg
 
 dt = (-ve*(mf-m0))/T_N; % s
+dt_min = dt/60;
