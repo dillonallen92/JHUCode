@@ -33,7 +33,7 @@ t.test(fish_ph65$Guarding, fish_ph65$Fanning, paired = TRUE) # t = 5.3816, alt h
 binom.test(sum((fish_ph65$Guarding - fish_ph65$Fanning) > 0), length(fish_ph65$Guarding)) #p-val = .0004025
 
 # test for ph7
-t.test(fish_ph7$Guarding, fish_ph7$Fanning, paired = TRUE) # t = 5.3816, alt hyp
+t.test(fish_ph7$Guarding, fish_ph7$Fanning, paired = TRUE) # t = 1.4236, cannot reject, p-val = .1708
 binom.test(sum((fish_ph7$Guarding - fish_ph7$Fanning) > 0), length(fish_ph7$Guarding)) #p-val = .8238
 
 # Split by genders
@@ -52,7 +52,16 @@ binom.test(sum((fish_female$Guarding - fish_female$Fanning)>0), length(fish_fema
 # now it is time to start plotting things
 library(ggplot2)
 
+# Guarding vs Fanning colored by Gender
+p <- ggplot(fish, aes(x=Guarding, y=Fanning, color=Gender)) + geom_point()
+p + ggtitle("Fish Guarding times vs Fanning times")
 
+# pH plots
+par(mfrow=c(2,2))
+plot(fish_ph55$Guarding, fish_ph55$Fanning, xlab = 'Guarding', ylab = 'Fanning', main = 'pH 5.5')
+plot(fish_ph6$Guarding, fish_ph6$Fanning, xlab = 'Guarding', ylab = 'Fanning', main = 'pH 6.0')
+plot(fish_ph65$Guarding, fish_ph65$Fanning, xlab = 'Guarding', ylab = 'Fanning', main = 'pH 6.5')
+plot(fish_ph7$Guarding, fish_ph7$Fanning, xlab = 'Guarding', ylab = 'Fanning', main = 'pH 7.0')
 
 
 
